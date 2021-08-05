@@ -1,12 +1,15 @@
-package recipes;
+package recipes.model;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Recipe {
     String name;
     String description;
-    String ingredients;
-    String directions;
+    String[] ingredients;
+    String[] directions;
 
-    public Recipe(String name, String description, String ingredients, String directions) {
+    public Recipe(String name, String description, String[] ingredients, String[] directions) {
         this.name = name;
         this.description = description;
         this.ingredients = ingredients;
@@ -32,19 +35,19 @@ public class Recipe {
         this.description = description;
     }
 
-    public String getIngredients() {
+    public String[] getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(String ingredients) {
+    public void setIngredients(String[] ingredients) {
         this.ingredients = ingredients;
     }
 
-    public String getDirections() {
+    public String[] getDirections() {
         return directions;
     }
 
-    public void setDirections(String directions) {
+    public void setDirections(String[] directions) {
         this.directions = directions;
     }
 }
