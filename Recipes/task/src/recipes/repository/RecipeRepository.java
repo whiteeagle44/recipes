@@ -1,8 +1,9 @@
 package recipes.repository;
 
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 import recipes.model.Recipe;
 
-public interface RecipeRepository {
-    Long add(Recipe recipe);
-    Recipe get(Long id);
+@Repository
+public interface RecipeRepository extends CrudRepository<Recipe, Long> {
 }
