@@ -9,7 +9,9 @@ import recipes.model.Recipe;
 import recipes.service.RecipeService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -32,10 +34,30 @@ public class RecipeController {
         return recipe.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping(value = "/api/recipe/search", params = "category")
+    public List<Recipe> getRecipesByCategory(@RequestParam String category) {
+        return recipeService.getRecipesByCategory(category);
+    }
+
+    @GetMapping(value = "/api/recipe/search", params = "name")
+    public List<Recipe> getRecipesByName(@RequestParam String name) {
+        return recipeService.getRecipesByName(name);
+    }
+
+    @PutMapping("/api/recipe/{id}")
+    public ResponseEntity<Recipe> putRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe) {
+        try {
+            recipeService.updateRecipe(id, recipe);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @DeleteMapping("/api/recipe/{id}")
     public ResponseEntity<Recipe> deleteRecipe(@PathVariable Long id) {
         try {
-            recipeService.delete(id);
+            recipeService.deleteRecipe(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
         } catch (EmptyResultDataAccessException e) {

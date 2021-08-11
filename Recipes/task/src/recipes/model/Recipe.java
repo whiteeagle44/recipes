@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Entity
 public class Recipe {
@@ -17,26 +18,19 @@ public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @NotBlank
+    @NotBlank(message = "name should not be blank")
     private String name;
-    @NotBlank
+    @NotBlank(message = "category should not be blank")
+    private String category;
+    private LocalDateTime date;
+    @NotBlank(message = "description should not be blank")
     private String description;
-    @NotEmpty
+    @NotEmpty(message = "ingredients should not be blank")
     @Size(min=1)
     private String[] ingredients;
-    @NotEmpty
+    @NotEmpty(message = "directions should not be blank")
     @Size(min=1)
     private String[] directions;
-
-    public Recipe(String name, String description, String[] ingredients, String[] directions) {
-        this.name = name;
-        this.description = description;
-        this.ingredients = ingredients;
-        this.directions = directions;
-    }
-
-    public Recipe() {
-    }
 
     public long getId() {
         return id;
@@ -52,6 +46,22 @@ public class Recipe {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 
     public String getDescription() {
