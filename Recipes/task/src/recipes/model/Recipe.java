@@ -1,6 +1,7 @@
 package recipes.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,14 +23,15 @@ public class Recipe {
     private String name;
     @NotBlank(message = "category should not be blank")
     private String category;
+    @UpdateTimestamp
     private LocalDateTime date;
     @NotBlank(message = "description should not be blank")
     private String description;
     @NotEmpty(message = "ingredients should not be blank")
-    @Size(min=1)
+    @Size(min = 1, message = "ingredients must contain at least one element")
     private String[] ingredients;
     @NotEmpty(message = "directions should not be blank")
-    @Size(min=1)
+    @Size(min = 1, message = "directions must contain at least one element")
     private String[] directions;
 
     public long getId() {

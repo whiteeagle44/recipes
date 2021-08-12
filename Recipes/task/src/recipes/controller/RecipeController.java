@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/api/recipe/")
 public class RecipeController {
     private final RecipeService recipeService;
 
@@ -22,44 +23,43 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
-    @PostMapping("/api/recipe/new")
-    public Map<String, Long> postRecipe(@Valid @RequestBody Recipe recipe) {
-        Long id = recipeService.addRecipe(recipe);
+    @PostMapping("new")
+    public Map<String, Long> addRecipe(@Valid @RequestBody Recipe recipe) {
+        Long id = recipeService.add(recipe);
         return Map.of("id", id);
     }
 
-    @GetMapping("/api/recipe/{id}")
+    @GetMapping("{id}")
     public Recipe getRecipe(@PathVariable Long id) {
-        Optional<Recipe> recipe = recipeService.getRecipe(id);
+        Optional<Recipe> recipe = recipeService.get(id);
         return recipe.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping(value = "/api/recipe/search", params = "category")
+    @GetMapping(value = "search", params = "category")
     public List<Recipe> getRecipesByCategory(@RequestParam String category) {
-        return recipeService.getRecipesByCategory(category);
+        return recipeService.getByCategory(category);
     }
 
-    @GetMapping(value = "/api/recipe/search", params = "name")
+    @GetMapping(value = "search", params = "name")
     public List<Recipe> getRecipesByName(@RequestParam String name) {
-        return recipeService.getRecipesByName(name);
+        return recipeService.getByName(name);
     }
 
-    @PutMapping("/api/recipe/{id}")
-    public ResponseEntity<Recipe> putRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe) {
+    @PutMapping("{id}")
+    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe) {
         try {
-            recipeService.updateRecipe(id, recipe);
+            recipeService.update(id, recipe);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
 
-    @DeleteMapping("/api/recipe/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Recipe> deleteRecipe(@PathVariable Long id) {
         try {
-            recipeService.deleteRecipe(id);
+            recipeService.delete(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
