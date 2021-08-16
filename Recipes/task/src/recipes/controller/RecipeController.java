@@ -3,12 +3,16 @@ package recipes.controller;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import recipes.model.Recipe;
+import recipes.model.User;
 import recipes.service.RecipeService;
 
 import javax.validation.Valid;
+import java.security.AccessControlException;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -24,8 +28,8 @@ public class RecipeController {
     }
 
     @PostMapping("new")
-    public Map<String, Long> addRecipe(@Valid @RequestBody Recipe recipe) {
-        Long id = recipeService.add(recipe);
+    public Map<String, Long> addRecipe(@Valid @RequestBody Recipe recipe, @AuthenticationPrincipal UserDetails author) {
+        Long id = recipeService.add(recipe, author);
         return Map.of("id", id);
     }
 
@@ -46,22 +50,26 @@ public class RecipeController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe) {
+    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe, @AuthenticationPrincipal User author) {
         try {
-            recipeService.update(id, recipe);
+            recipeService.update(id, recipe, author);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (AccessControlException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Recipe> deleteRecipe(@PathVariable Long id) {
+    public ResponseEntity<Recipe> deleteRecipe(@PathVariable Long id, @AuthenticationPrincipal User author) {
         try {
-            recipeService.delete(id);
+            recipeService.delete(id, author);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (AccessControlException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 }

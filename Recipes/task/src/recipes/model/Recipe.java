@@ -3,10 +3,7 @@ package recipes.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -14,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Recipe {
-
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,6 +29,9 @@ public class Recipe {
     @NotEmpty(message = "directions should not be blank")
     @Size(min = 1, message = "directions must contain at least one element")
     private String[] directions;
+    @JsonIgnore
+    @ManyToOne
+    private User user;
 
     public long getId() {
         return id;
@@ -88,5 +87,13 @@ public class Recipe {
 
     public void setDirections(String[] directions) {
         this.directions = directions;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User author) {
+        this.user = author;
     }
 }
