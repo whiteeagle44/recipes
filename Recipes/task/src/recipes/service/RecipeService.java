@@ -22,8 +22,11 @@ public class RecipeService {
         this.userRepository = userRepository;
     }
 
-    public long add(Recipe recipe, UserDetails user) {
-        recipe.setUser(userRepository.findUserByEmail(user.getUsername()).get());
+    public long add(Recipe recipe, UserDetails userDetails) {
+        User user = userRepository.findUserByEmail(userDetails.getUsername()).get();
+        recipe.setUser(user);
+        user.getRecipes().add(recipe);
+        userRepository.save(user);
         return recipeRepository.save(recipe).getId();
     }
 
@@ -39,9 +42,11 @@ public class RecipeService {
         return recipeRepository.findAllByNameContainingIgnoreCaseOrderByDateDesc(name);
     }
 
-    public void update(Long id, Recipe recipe, User author) {
+    public void update(Long id, Recipe recipe, UserDetails userDetails) {
         Recipe oldRecipe = recipeRepository.findById(id).orElseThrow();
-        if (!oldRecipe.getUser().equals(author)) {
+
+        User user = userRepository.findUserByEmail(userDetails.getUsername()).get();
+        if (!oldRecipe.getUser().equals(user)) {
             throw new AccessControlException("Only the original author of the recipe is allowed to update it.");
         }
         oldRecipe.setName(recipe.getName());
@@ -52,12 +57,15 @@ public class RecipeService {
         recipeRepository.save(oldRecipe);
     }
 
-    public void delete(Long id, User author) {
+    public void delete(Long id, UserDetails userDetails) {
         Optional<Recipe> recipe = recipeRepository.findById(id);
         recipe.orElseThrow(() -> new EmptyResultDataAccessException(1));
-        if (!recipe.get().getUser().equals(author)) {
+
+        User user = userRepository.findUserByEmail(userDetails.getUsername()).get();
+        if (!recipe.get().getUser().equals(user)) {
             throw new AccessControlException("Only the original author of the recipe is allowed to delete it.");
         }
         recipeRepository.deleteById(id);
+        user.getRecipes().remove(recipe.get());
     }
 }

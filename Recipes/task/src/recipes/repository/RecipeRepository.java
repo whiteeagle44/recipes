@@ -3,6 +3,7 @@ package recipes.repository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import recipes.model.Recipe;
+import recipes.model.User;
 
 import java.util.List;
 
@@ -10,4 +11,5 @@ import java.util.List;
 public interface RecipeRepository extends CrudRepository<Recipe, Long> {
     List<Recipe> findAllByCategoryIgnoreCaseOrderByDateDesc(String category);
     List<Recipe> findAllByNameContainingIgnoreCaseOrderByDateDesc(String name);
+    void deleteAllByUser(User user);
 }

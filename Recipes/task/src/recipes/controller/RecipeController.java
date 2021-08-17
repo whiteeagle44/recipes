@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import recipes.model.Recipe;
-import recipes.model.User;
 import recipes.service.RecipeService;
 
 import javax.validation.Valid;
@@ -28,8 +27,8 @@ public class RecipeController {
     }
 
     @PostMapping("new")
-    public Map<String, Long> addRecipe(@Valid @RequestBody Recipe recipe, @AuthenticationPrincipal UserDetails author) {
-        Long id = recipeService.add(recipe, author);
+    public Map<String, Long> addRecipe(@Valid @RequestBody Recipe recipe, @AuthenticationPrincipal UserDetails userDetails) {
+        Long id = recipeService.add(recipe, userDetails);
         return Map.of("id", id);
     }
 
@@ -50,9 +49,9 @@ public class RecipeController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe, @AuthenticationPrincipal User author) {
+    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @Valid @RequestBody Recipe recipe, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            recipeService.update(id, recipe, author);
+            recipeService.update(id, recipe, userDetails);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (NoSuchElementException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -62,9 +61,9 @@ public class RecipeController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Recipe> deleteRecipe(@PathVariable Long id, @AuthenticationPrincipal User author) {
+    public ResponseEntity<Recipe> deleteRecipe(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         try {
-            recipeService.delete(id, author);
+            recipeService.delete(id, userDetails);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (EmptyResultDataAccessException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);

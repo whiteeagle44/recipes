@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -18,6 +20,8 @@ public class User {
     @NotBlank(message = "password shouldn't be null")
     @Size(min = 8, message = "password should contain at least 8 chars")
     private String password;
+    @OneToMany(mappedBy = "user")
+    private List<Recipe> recipes = new ArrayList<>();
 
     public long getId() {
         return id;
@@ -41,5 +45,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
     }
 }
